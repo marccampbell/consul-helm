@@ -154,6 +154,14 @@ spec:
             - containerPort: 8600
               name: dns-udp
               protocol: "UDP"
+          livenessProbe:
+            exec:
+              command:
+              - consul
+              - members
+              - -http-addr=http://127.0.0.1:8500
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
           readinessProbe:
             # NOTE(mitchellh): when our HTTP status endpoints support the
             # proper status codes, we should switch to that. This is temporary.
@@ -176,7 +184,7 @@ spec:
       {{- if .Values.server.nodeSelector }}
       nodeSelector:
         {{ tpl .Values.server.nodeSelector . | indent 8 | trim }}
-      {{- end }}    
+      {{- end }}
   volumeClaimTemplates:
     - metadata:
         name: data-{{ .Release.Namespace }}
